@@ -62,12 +62,16 @@ extern "C" {
 #define LED_TYPE            WS2812B                     // You might also use a WS2811 or any other strip that is Fastled compatible 
 #define DATA_PIN            D1                          // Be aware: the pin mapping might be different on boards like the NodeMCU
 //#define CLK_PIN           D5                          // Only required when using 4-pin SPI-based LEDs
-#define MOSFET_PIN          D4                        // Pin for the MOSFET, can be used to physical power off the LED stripe
-#define MOSFET_LEVEL        (HIGH)                    // logic level for LED on
+#define MOSFET_PIN          D4                          // Pin for the MOSFET, can be used to physical power off the LED stripe
+#define MOSFET_LEVEL        (HIGH)                      // logic level for LED on
 #define CORRECTION          UncorrectedColor            // If colors are weird use TypicalLEDStrip
 #define COLOR_ORDER         GRB                         // Change this if colors are swapped (in my case, red was swapped with green)
 #define MILLI_AMPS          2000                        // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
 #define VOLTS               5                           // Voltage of the Power Supply
+
+#define BTN_PIN             D2                          // button pin. should be commented out, if no button used
+#define BTN_STEP_TIMEOUT    (100U)                      // every BTN_STEP_TIMEOUT ms an event is generated when holding the button
+#define BTN_CLICK_TIMEOUT   (500U)                      // the maximum time between button presses in ms, until which a series of successive presses is considered 
 
 #define LED_DEBUG 0                     // enable debug messages on serial console, set to 0 to disable debugging
 
@@ -333,6 +337,12 @@ if you have connected the ring first it should look like this: const int twpOffs
 #define SERIAL_DEBUG_BOL do{}while(0);
 #define SERIAL_DEBUG_LN(s) do{}while(0);
 #define SERIAL_DEBUG_LNF(format, ...) do{}while(0);
+#endif
+
+#ifdef BTN_PIN
+#include <GyverButton.h>
+    GButton touch(BTN_PIN, LOW_PULL, NORM_OPEN); // for hardware button (low active) change LOW_PULL to HIGH_PULL.
+    bool buttonEnabled = true; // unused yet, can be useful to temporarily disable button 
 #endif
 
 #ifdef LED_DEVICE_TYPE
@@ -744,6 +754,13 @@ void setup() {
 #if defined(MOSFET_PIN) && defined(MOSFET_LEVEL)           
     pinMode(MOSFET_PIN, OUTPUT);
     digitalWrite(MOSFET_PIN, power == 1 ? MOSFET_LEVEL : !MOSFET_LEVEL);
+#endif
+
+// button
+#ifdef BTN_PIN
+    touch.setStepTimeout(BTN_STEP_TIMEOUT);
+    touch.setClickTimeout(BTN_CLICK_TIMEOUT);
+    buttonEnabled = true;
 #endif
 
     // starting file system
@@ -1332,6 +1349,12 @@ void loop() {
     static unsigned int current_fps = FRAMES_PER_SECOND;
     static unsigned int frame_delay = (1000 / FRAMES_PER_SECOND) * 1000; // in micro seconds
 
+    #ifdef BTN_PIN
+        if (buttonEnabled) {
+            buttonTick();
+        }
+    #endif
+  
     // insert a delay to keep the framerate modest
     // delayMicroseconds max value is 16383
     if (frame_delay < 16000){
