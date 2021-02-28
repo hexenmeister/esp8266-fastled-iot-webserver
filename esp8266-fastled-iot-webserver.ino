@@ -459,8 +459,10 @@ EspalexaDevice* alexa_main;
 
 CRGB leds[NUM_LEDS];
 
-const uint8_t brightnessCount = 5;
-uint8_t brightnessMap[brightnessCount] = { 5, 32, 64, 128, 255 };
+#define ARRAY_ROWS(ARRAY) (sizeof(ARRAY) / sizeof(ARRAY[0]))
+
+uint8_t brightnessMap[] = { 5, 32, 64, 128, 255 };
+const uint8_t brightnessCount = ARRAY_ROWS(brightnessMap); // 5;
 uint8_t brightnessIndex = 3;
 
 // ten seconds per color palette makes a good demo
@@ -1859,9 +1861,10 @@ void adjustBrightness(bool up)
 
 void setBrightness(uint8_t value)
 {
-    if (value > 255)
-        value = 255;
-    else if (value < 0) value = 0;
+    // useless couse of uint8_t
+    //if (value > 255)
+    //    value = 255;
+    //else if (value < 0) value = 0;
 
     brightness = value;
 

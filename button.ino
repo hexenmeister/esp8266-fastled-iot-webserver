@@ -1,6 +1,6 @@
 #ifdef BTN_PIN
 
-bool brightDirection;
+bool direction;
 static bool startButtonHolding = false;                     // Flag: botton hold
 
 
@@ -68,7 +68,7 @@ void buttonTick()
   // button holding start 
   if (touch.isHolded()) {
     if(power == 1) {
-      brightDirection = !brightDirection;
+      direction = !direction;
       startButtonHolding = true;
     }
   }
@@ -81,21 +81,23 @@ void buttonTick()
   		switch (touch.getHoldClicks()) {
   		  // no clicks => change brightness
   		  case 0U: {
-  		    // определение шага изменения яркости: при яркости [1..10] шаг = 1, при [11..16] шаг = 3, при [17..255] шаг = 15
-  			//uint8_t delta = modes[currentMode].Brightness < 10U ? 1U : 5U;
-  			//modes[currentMode].Brightness = constrain(brightDirection ? modes[currentMode].Brightness + delta : modes[currentMode].Brightness - delta, 1, 255);
-  			// TODO
-  			break;
+          // compute brightness step
+          uint8_t delta = brightness < 10U ? 1U : brightness < 150U ? 5U : 10U;
+          setBrightness(direction ? brightness > delta ? brightness - delta : 1U : brightness < 255U - delta ? brightness + delta : 255U);
+          break;
   		  }
+       
   		  // after one click => change speed
   		  case 1U: {
-  			// modes[currentMode].Speed = constrain(brightDirection ? modes[currentMode].Speed + 1 : modes[currentMode].Speed - 1, 1, 255);
-  			break;
+          // TODO
+  			  // modes[currentMode].Speed = constrain(brightDirection ? modes[currentMode].Speed + 1 : modes[currentMode].Speed - 1, 1, 255);
+  			  break;
   		  }
-            // after two clicks => ?
+       
+        // after two clicks => ?
   		  case 2U: {
-  			// nothing yet
-  			break;
+  			  // nothing yet
+  			  break;
   		  }
   
   		  default:
