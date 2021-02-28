@@ -22,20 +22,20 @@ void buttonTick()
     setPower((power == 1) ? 0 : 1);
   }
 
-
   // two clicks
   if (clickCount == 2U)
   {
-    // TODO: next effect
+    // next pattern / effect
+    setPattern(currentPatternIndex < patternCount - 1 ? currentPatternIndex + 1 : 0);
   }
-
 
   // 3 clicks
   if (clickCount == 3U)
   {
-    // TODO: previous effect
+    // previous pattern / effect
+    setPattern(currentPatternIndex > 0 ? currentPatternIndex - 1 : patternCount - 1);
   }
-
+  
 
   // 4 clicks
   if (clickCount == 4U)
