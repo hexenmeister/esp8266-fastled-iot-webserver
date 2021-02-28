@@ -60,20 +60,20 @@ extern "C" {
 
 /*######################## MAIN CONFIG ########################*/
 #define LED_TYPE            WS2812B                     // You might also use a WS2811 or any other strip that is Fastled compatible 
-#define DATA_PIN            D3                          // Be aware: the pin mapping might be different on boards like the NodeMCU
+#define DATA_PIN            D1                          // Be aware: the pin mapping might be different on boards like the NodeMCU
 //#define CLK_PIN           D5                          // Only required when using 4-pin SPI-based LEDs
-#define MOSFET_PIN          D4                          // Pin for a MOSFET, can be used to physical power off the LED stripe
-#define MOSFET_LEVEL        (HIGH)                      // logic level for LED state 'on'
+#define MOSFET_PIN          D4                        // Pin for the MOSFET, can be used to physical power off the LED stripe
+#define MOSFET_LEVEL        (HIGH)                    // logic level for LED on
 #define CORRECTION          UncorrectedColor            // If colors are weird use TypicalLEDStrip
 #define COLOR_ORDER         GRB                         // Change this if colors are swapped (in my case, red was swapped with green)
-#define MILLI_AMPS          10000                       // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
+#define MILLI_AMPS          2000                        // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
 #define VOLTS               5                           // Voltage of the Power Supply
 
 #define LED_DEBUG 0                     // enable debug messages on serial console, set to 0 to disable debugging
 
 #define DEFAULT_HOSTNAME "LEDs"         // Name that appears in your network, don't use whitespaces, use "-" instead
 
-#define LED_DEVICE_TYPE 0               // The following types are available
+#define LED_DEVICE_TYPE 4               // The following types are available
 
 /*
     0: Generic LED-Strip: a regular LED-Strip without any special arrangement (and Infinity Mirror + Bottle Lighting Pad)
@@ -135,8 +135,8 @@ extern "C" {
     #define LEDS_PER_LINE 10            // Amount of led pixel per single led strip piece
 
 #elif LED_DEVICE_TYPE == 4              // Nanoleafs
-    #define LEAFCOUNT 12                // Amount of triangles
-    #define PIXELS_PER_LEAF 12          // Amount of LEDs inside 1x Tringle
+    #define LEAFCOUNT 8                 // Amount of triangles
+    #define PIXELS_PER_LEAF 15          // Amount of LEDs inside 1x Tringle
 
 #elif LED_DEVICE_TYPE == 5              // Animated Logos
     // Choose your logo below, remove the comment in front of your design
@@ -164,7 +164,7 @@ extern "C" {
 
     //#define ENABLE_SERIAL_AMBILIGHT           // allows to function as an ambilight behind a monitor by using data from usb-serial (integration of adalight)
 
-    //#define ENABLE_MQTT_SUPPORT               // allows integration in homeassistant/googlehome/mqtt
+    #define ENABLE_MQTT_SUPPORT               // allows integration in homeassistant/googlehome/mqtt
                                                 // mqtt server required, see MQTT Configuration for more, implemented by GitHub/WarDrake
 
     //#define ENABLE_UDP_VISUALIZATION          // allows to sync the LEDs with pc-music using https://github.com/NimmLor/IoT-Audio-Visualization-Center
@@ -271,9 +271,9 @@ if you have connected the ring first it should look like this: const int twpOffs
 #ifdef ENABLE_MQTT_SUPPORT
     // these are deafault settings which can be changed in the web interface "settings" page
     #define MQTT_ENABLED 0
-    #define MQTT_HOSTNAME "homeassistant.local"
+    #define MQTT_HOSTNAME "192.168.0.15"
     #define MQTT_PORT 1883
-    #define MQTT_USER "MyUserName"
+    #define MQTT_USER ""
     #define MQTT_PASS ""
     #define MQTT_TOPIC_SET "/set"                                       // MQTT Topic to subscribe to for changes(Home Assistant)
     #if LED_DEVICE_TYPE == 0
