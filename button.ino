@@ -89,9 +89,9 @@ void buttonTick()
        
   		  // after one click => change speed
   		  case 1U: {
-          // TODO
-  			  // modes[currentMode].Speed = constrain(brightDirection ? modes[currentMode].Speed + 1 : modes[currentMode].Speed - 1, 1, 255);
-  			  break;
+          uint8_t delta = speed < 10U ? 1U : speed < 150U ? 5U : 10U;
+          setSpeed(direction ? speed > delta ? speed - delta : 1U : speed < 255U - delta ? speed + delta : 255U);
+          break;
   		  }
        
         // after two clicks => ?
