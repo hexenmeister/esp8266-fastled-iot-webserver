@@ -18,7 +18,7 @@ void buttonTick()
   // one click
   if (clickCount == 1U)
   {
-    // TODO: power
+    // toggle power
     setPower((power == 1) ? 0 : 1);
   }
 
