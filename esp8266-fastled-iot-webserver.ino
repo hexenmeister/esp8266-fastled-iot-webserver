@@ -4864,8 +4864,28 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
             }
         }
         if (strcmp(key, "brightness") == 0) {
+            // inc/dec brightness
+            const char* cval = v.as<const char*>();
+            if (strcmp(cval, "inc") == 0 || strcmp(cval, "+") == 0) {
+                // increment
+                uint8_t delta = brightness < 10U ? 1U : brightness < 150U ? 5U : 10U;
+                setBrightness(brightness < 255U - delta ? brightness + delta : 255U);                
+            } else if (strcmp(cval, "dec") == 0 || strcmp(cval, "-") == 0) {
+                // decrement
+                uint8_t delta = brightness < 10U ? 1U : brightness < 150U ? 5U : 10U;
+                setBrightness(brightness > delta ? brightness - delta : 1U);
+            } else {
             uint8_t val = v.as<uint8_t>();
             setBrightness(val);
+        }
+        }
+        if (strcmp(key, "brightness_delta") == 0) {
+            int8_t val = v.as<int8_t>();
+            if(val > 0) {
+                setBrightness(brightness < 255U - val ? brightness + val: 255U);
+            } else {
+                setBrightness(brightness > -val ? brightness + val: 1U);
+            }
         }
         if (strcmp(key, "autoplay") == 0){
             String val = v.as<String>();
@@ -4879,8 +4899,28 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
             }
         }
         if (strcmp(key, "speed") == 0){
-            int val = v.as<int>();
+            // inc/dec speed
+            const char* cval = v.as<const char*>();
+            if (strcmp(cval, "inc") == 0 || strcmp(cval, "+") == 0) {
+                // increment
+                uint8_t delta = speed < 10U ? 1U : speed < 150U ? 5U : 10U;
+                setSpeed(speed < 255U - delta ? speed + delta : 255U);
+            } else if (strcmp(cval, "dec") == 0 || strcmp(cval, "-") == 0) {
+                // decrement
+                uint8_t delta = speed < 10U ? 1U : speed < 150U ? 5U : 10U;
+                setSpeed(speed > delta ? speed - delta : 1U);
+            } else {
+                uint8_t val = v.as<uint8_t>();
             setSpeed(val);
+        }
+        }
+        if (strcmp(key, "speed_delta") == 0) {
+            int8_t val = v.as<int8_t>();
+            if(val > 0) {
+                setSpeed(speed < 255U - val ? speed + val: 255U);
+            } else {
+                setSpeed(speed > -val ? speed + val: 1U);
+            }
         }
         if (strcmp(key, "hue") == 0){
             uint8_t val = v.as<uint8_t>();
@@ -4893,6 +4933,20 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
         if (strcmp(key, "effect") == 0) {
             String val = v.as<String>();
             setPatternName(val);
+        }
+        if (strcmp(key, "effect_num") == 0 || strcmp(key, "effect_number") == 0) {
+            String val = v.as<String>();
+            const char* cval = val.c_str();
+            if (strcmp(cval, "inc") == 0 || strcmp(cval, "+") == 0 || strcmp(cval, "next") == 0) {
+                // next pattern / effect
+                setPattern(currentPatternIndex < patternCount - 1 ? currentPatternIndex + 1 : 0);
+            } else if (strcmp(cval, "dec") == 0 || strcmp(cval, "-") == 0 || strcmp(cval, "prev") == 0) {
+                // previous pattern / effect
+                setPattern(currentPatternIndex > 0 ? currentPatternIndex - 1 : patternCount - 1);
+            } else {
+                uint8_t ival = v.as<uint8_t>();
+                setPattern(ival);
+            }
         }
         if (strcmp(key, "color") == 0) {
             uint8_t cr, cb, cg;
@@ -4920,16 +4974,18 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
 void mqttSendStatus() {
     if (cfg.MQTTEnabled != 1) return;
 
-    StaticJsonDocument<128> JSONencoder;
+    StaticJsonDocument<256> JSONencoder;
+      JSONencoder["IP"] = WiFi.localIP().toString(),
       JSONencoder["state"] = (power == 1 ? "ON" : "OFF"),
       JSONencoder["brightness"] = brightness,
       JSONencoder["effect"] = patterns[currentPatternIndex].name,
+      JSONencoder["effect_number"] = currentPatternIndex,
       JSONencoder["autoplay"] = autoplay,
       JSONencoder["speed"] = speed;
       JSONencoder["hue"] = getHueMapped((uint8_t)0, (uint8_t)255);
       JSONencoder["saturation"] = getSatMapped((uint8_t)0, (uint8_t)255);
 
-    uint8_t JSONmessage[128];
+    uint8_t JSONmessage[256];
     size_t n = serializeJson(JSONencoder, JSONmessage);
     if (!mqttProcessing){
         mqttClient.publish(cfg.MQTTTopic, JSONmessage, n, true);
