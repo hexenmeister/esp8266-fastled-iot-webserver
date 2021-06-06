@@ -154,8 +154,8 @@ extern "C" {
 //---------------------------------------------------------------------------------------------------------//
 // Feature Configuration: Enabled by removing the "//" in front of the define statements
 //---------------------------------------------------------------------------------------------------------//
-    //#define ENABLE_OTA_SUPPORT                // requires ArduinoOTA - library, not working on esp's with 1MB memory (esp-01, Wemos D1 lite ...)
-        //#define OTA_PASSWORD "passwd123"      //  password that is required to update the esp's firmware wireless
+    #define ENABLE_OTA_SUPPORT                // requires ArduinoOTA - library, not working on esp's with 1MB memory (esp-01, Wemos D1 lite ...)
+        #define OTA_PASSWORD "123456789"      //  password that is required to update the esp's firmware wireless
 
     #define ENABLE_MULTICAST_DNS              // allows to access the UI via "http://<HOSTNAME>.local/", implemented by GitHub/WarDrake
 
@@ -171,7 +171,7 @@ extern "C" {
     #define ENABLE_MQTT_SUPPORT                 // allows integration in homeassistant/googlehome/mqtt
                                                 // mqtt server required, see MQTT Configuration for more, implemented by GitHub/WarDrake
 
-    //#define ENABLE_UDP_VISUALIZATION          // allows to sync the LEDs with pc-music using https://github.com/NimmLor/IoT-Audio-Visualization-Center
+    #define ENABLE_UDP_VISUALIZATION            // allows to sync the LEDs with pc-music using https://github.com/NimmLor/IoT-Audio-Visualization-Center
 
     //#define ENABLE_HOMEY_SUPPORT              // Add support for Homey integration (Athom Homey library required)
 
@@ -459,9 +459,8 @@ EspalexaDevice* alexa_main;
 
 CRGB leds[NUM_LEDS];
 
-#define ARRAY_ROWS(ARRAY) (sizeof(ARRAY) / sizeof(ARRAY[0]))
 uint8_t brightnessMap[] = { 5, 32, 64, 128, 255 };
-const uint8_t brightnessCount = ARRAY_ROWS(brightnessMap); // 5;
+const uint8_t brightnessCount = ARRAY_SIZE(brightnessMap); // 5;
 uint8_t brightnessIndex = 3;
 
 // ten seconds per color palette makes a good demo
