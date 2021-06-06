@@ -4944,7 +4944,6 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
                 setPattern(currentPatternIndex > 0 ? currentPatternIndex - 1 : patternCount - 1);
             } else {
                 uint8_t ival = v.as<uint8_t>();
-
                 setPattern(ival);
             }
         }
